@@ -1,4 +1,4 @@
-# AROLLA
+# PANGMASA
 
 
 - You must need to buy a VPS for running Allora Worker
