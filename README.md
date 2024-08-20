@@ -130,7 +130,6 @@ nano config.json
             "loopSeconds": 1,
             "parameters": {
                 "InferenceEndpoint": "http://inference:8000/inference/{blockheight}",
-                "Token": "ARB"
             }
         }
         
