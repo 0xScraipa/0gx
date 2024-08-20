@@ -285,9 +285,7 @@ docker compose up --build -d
 ```
 
 ## Check your wallet here: http://worker-tx.nodium.xyz/
-![image](https://github.com/user-attachments/assets/6e9ce7fd-fdf5-40d2-98f9-d20eb8486fce)
 
-Congrats! Join our Discord if you having problem with the setup https://discord.gg/r6PPSjRZec
 
 
 
