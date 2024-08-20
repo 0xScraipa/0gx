@@ -123,14 +123,6 @@ nano config.json
                 "InferenceEndpoint": "http://inference:8000/inference/{Token}",
                 "Token": "ARB"
             }
-        },
-        {
-            "topicId": 10,
-            "inferenceEntrypointName": "api-worker-reputer",
-            "loopSeconds": 1,
-            "parameters": {
-                "InferenceEndpoint": "http://inference:8000/inference/{blockheight}",
-            }
         }
         
     ]
