@@ -135,8 +135,6 @@ chmod +x init.config
 ```
 ## Step 4: Edit App.py
 - Register on Coingecko https://www.coingecko.com/en/developers/dashboard & Create Demo API KEY
-- Register on UPSHOT https://developer.upshot.xyz/ & Create Demo API KEY
-
 - Copy & Replace API with your `UPSHOT API` -`COINGECKO API` , then save `Ctrl+X Y ENTER`.
 ```bash
 nano app.py
@@ -152,23 +150,6 @@ import random
 # create our Flask app
 app = Flask(__name__)
         
-def get_memecoin_token(blockheight):
-    
-    upshot_url = f"https://api.upshot.xyz/v2/allora/tokens-oracle/token/{blockheight}"
-    headers = {
-        "accept": "application/json",
-        "x-api-key": "UP-XXXXXXXXXXXXXXXXXXXXXXXXX" # replace with your API key
-    }   
-    
-    response = requests.get(upshot_url, headers=headers)
-    
-    if response.status_code == 200:
-        data = response.json()
-        name_token = str(data["data"]["token_id"]) #return "boshi"
-        return name_token
-    else:
-        raise ValueError("Unsupported token") 
-    
 def get_simple_price(token):
     base_url = "https://api.coingecko.com/api/v3/simple/price?ids="
     token_map = {
@@ -178,76 +159,73 @@ def get_simple_price(token):
         'BNB': 'binancecoin',
         'ARB': 'arbitrum'
     }
-    headers = {
-        "accept": "application/json",
-        "x-cg-demo-api-key": "CG-XXXXXXXXXXXXXXXXXXXXXXXXX" # replace with your API key
-    }
     token = token.upper()
     if token in token_map:
         url = f"{base_url}{token_map[token]}&vs_currencies=usd"
-        response = requests.get(url, headers=headers)
-        if response.status_code == 200:
-            data = response.json()
-            return str(data[token_map[token]]["usd"])
-        
-    elif token not in token_map:
-        token = token.lower()
-        url = f"{base_url}{token}&vs_currencies=usd"
-        response = requests.get(url, headers=headers)
-        if response.status_code == 200:
-            data = response.json()
-            return str(data[token]["usd"])   
-           
+        return url
     else:
         raise ValueError("Unsupported token") 
-
-def get_last_price(token, p):
-    
-    price_up = p
-    price_down = p
-    
-    token = token.upper()
-
-    if token == 'BTC':
-        price_up = float(p)*1.025
-        price_down = float(p)*0.98
-        return str(format(random.uniform(price_up, price_down), ".2f"))
-    
-    elif token == 'ETH':
-        price_up = float(p)*1.025
-        price_down = float(p)*0.98
-        return str(format(random.uniform(price_up, price_down), ".2f"))
-
-    elif token == 'SOL':
-        price_up = float(p)*1.02
-        price_down =float(p)*0.99
-        return str(format(random.uniform(price_up, price_down), ".2f"))
-
-    elif token == 'BNB':
-        price_up = float(p)*1.025
-        price_down =float(p)*0.98  
-        return str(format(random.uniform(price_up, price_down), ".2f"))
-
-    elif token == 'ARB':
-        price_up = float(p)*1.02
-        price_down =float(p)*0.99   
-        return str(format(random.uniform(price_up, price_down), ".4f"))
-    else:
-        return str(p)
-
+               
 # define our endpoint
-@app.route("/inference/<string:tokenorblockheight>")
-def get_inference(tokenorblockheight):
-    
-    if tokenorblockheight.isnumeric():
-        namecoin = get_memecoin_token(tokenorblockheight)
-    else:
-        namecoin = tokenorblockheight 
+@app.route("/inference/<string:token>")
+def get_inference(token):
+
     try:
-        return get_last_price(namecoin, get_simple_price(namecoin))
-        
+      
+        url = get_simple_price(token)
+        headers = {
+          "accept": "application/json",
+          "x-cg-demo-api-key": "CG-XXXXXXXXXXXXXXXXXXXXXXXX" # replace with your API key
+        }
+    
+        response = requests.get(url, headers=headers)
+        if response.status_code == 200:
+          data = response.json()
+          if token == 'BTC':
+            price1 = data["bitcoin"]["usd"]*1.02
+            price2 = data["bitcoin"]["usd"]*0.99
+          if token == 'ETH':
+            price1 = data["ethereum"]["usd"]*1.02
+            price2 = data["ethereum"]["usd"]*0.98
+          if token == 'SOL':
+            price1 = data["solana"]["usd"]*1.02
+            price2 = data["solana"]["usd"]*0.98
+          if token == 'BNB':
+            price1 = data["binancecoin"]["usd"]*1.02
+            price2 = data["binancecoin"]["usd"]*0.98
+          if token == 'ARB':
+            price1 = data["arbitrum"]["usd"]*1.02
+            price2 = data["arbitrum"]["usd"]*0.98
+          random_float = str(round(random.uniform(price1, price2), 2))
+        return random_float
     except Exception as e:
-        return get_last_price(namecoin, get_simple_price(namecoin))
+       # return Response(json.dumps({"pipeline error": str(e)}), status=500, mimetype='application/json')
+        url = get_simple_price(token)
+        headers = {
+          "accept": "application/json",
+          "x-cg-demo-api-key": "CG-XXXXXXXXXXXXXXXXXXXXXX # replace with your API key
+        }
+    
+        response = requests.get(url, headers=headers)
+        if response.status_code == 200:
+          data = response.json()
+          if token == 'BTC':
+            price1 = data["bitcoin"]["usd"]*1.02
+            price2 = data["bitcoin"]["usd"]*0.98
+          if token == 'ETH':
+            price1 = data["ethereum"]["usd"]*1.02
+            price2 = data["ethereum"]["usd"]*0.98
+          if token == 'SOL':
+            price1 = data["solana"]["usd"]*1.02
+            price2 = data["solana"]["usd"]*0.98
+          if token == 'BNB':
+            price1 = data["binancecoin"]["usd"]*1.02
+            price2 = data["binancecoin"]["usd"]*0.98
+          if token == 'ARB':
+            price1 = data["arbitrum"]["usd"]*1.02
+            price2 = data["arbitrum"]["usd"]*0.98
+          random_float = str(round(random.uniform(price1, price2), 2))
+        return random_float
 
     
 # run our Flask app
