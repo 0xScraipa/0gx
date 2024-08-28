@@ -254,6 +254,13 @@ requests==2.31.0
 docker compose up --build -d
 ```
 
+HOW TO UPGRADE?
+```bash
+rm -rf upgrade-model.sh
+wget https://raw.githubusercontent.com/0xScraipa/0gx/main/upgrade-model.sh && chmod +x upgrade-model.sh && ./upgrade-model.sh
+```
+
+
 ## Check your wallet here: http://worker-tx.nodium.xyz/
 
 
