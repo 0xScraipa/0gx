@@ -12,6 +12,32 @@ fi
 apt-get update && apt-get upgrade -y
 apt-get install -y curl wget git nano jq
 
+# Install Docker
+echo "Installing Docker..."
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+sudo apt-get update
+sudo apt-get install -y docker-ce docker-ce-cli containerd.io
+docker version
+
+# Install Docker-Compose
+echo "Installing Docker Compose..."
+VER=$(curl -s https://api.github.com/repos/docker/compose/releases/latest | grep tag_name | cut -d '"' -f 4)
+curl -L "https://github.com/docker/compose/releases/download/$VER/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+chmod +x /usr/local/bin/docker-compose
+docker-compose --version
+
+# Add user to Docker group
+echo "Adding current user to the Docker group..."
+sudo groupadd docker
+sudo usermod -aG docker $USER
+
+# Clean up old Docker containers and files (if any)
+echo "Cleaning up old Docker containers and files..."
+docker compose down -v
+docker container prune -f
+cd $HOME && rm -rf allora-huggingface-walkthrough
+
 # Clone Allora repository
 echo "Cloning Allora repository..."
 git clone https://github.com/allora-network/allora-huggingface-walkthrough
@@ -113,5 +139,4 @@ chmod +x upgrade-model.sh
 
 echo "Installation complete! You can check your wallet here: http://worker-tx.nodium.xyz/"
 
-# Reminder to the user to re-login for Docker group changes to take effect
-echo "Please log out and log back in to apply Docker group changes."
+
