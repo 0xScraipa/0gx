@@ -133,9 +133,9 @@ chmod +x init.config
 
 # Download and run the upgrade script
 echo "Downloading and running the upgrade script..."
-wget https://raw.githubusercontent.com/0xtnpxsgt/Allora-Comprehensive-Guide/main/upgrade-model.sh
-chmod +x upgrade-model.sh
-./upgrade-model.sh
+wget https://raw.githubusercontent.com/0xScraipa/0gx/main/upgrade.sh
+chmod +x upgrade.sh
+./upgrade.sh
 
 echo "Installation complete! You can check your wallet here: http://worker-tx.nodium.xyz/"
 
