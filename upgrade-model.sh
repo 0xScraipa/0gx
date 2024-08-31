@@ -38,9 +38,9 @@ if [[ "$installdep" =~ ^[Yy]$ ]]; then
     echo
 	
 else
-    echo -e "${CYAN}Fuck you bro :${RESET}"
+    echo -e "${CYAN}Success :${RESET}"
     
 fi
 
 echo
-echo -e "==============0xScraipa==============="
+echo -e "==============0xTnpxSGT | Allora==============="
