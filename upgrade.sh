@@ -19,16 +19,12 @@ if [[ "$installdep" =~ ^[Yy]$ ]]; then
     rm -rf requirements.txt
     wget -q https://raw.githubusercontent.com/0xScraipa/0gx/main/app.py -O /root/allora-huggingface-walkthrough/app.py
     wget -q https://raw.githubusercontent.com/0xScraipa/0gx/main/requirements.txt -O /root/allora-huggingface-walkthrough/requirements.txt
-    wget -q https://raw.githubusercontent.com/0xScraipa/0gx/main/birnn_model_optimized.pth -O /root/allora-huggingface-walkthrough/birnn_model_optimized.pth
+    wget -q https://raw.githubusercontent.com/0xScraipa/0gx/main/hybrid_lstm_gru_model_optimized.pth -O /root/allora-huggingface-walkthrough/hybrid_lstm_gru_model_optimized.pth
     wait
 	
     echo -e "${CYAN}Rebuild and run a model :${RESET}"
 
     cd /root/allora-huggingface-walkthrough/
-    echo
-    docker compose down
-    echo
-	
     echo
     docker compose up --build -d
     echo
@@ -43,4 +39,4 @@ else
 fi
 
 echo
-echo -e "==============0xTnpxSGT | Allora==============="
+echo -e "==============Allora==============="
