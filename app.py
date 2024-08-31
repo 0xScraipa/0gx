@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+import torch.optim as optim
 import pandas as pd
 from sklearn.preprocessing import MinMaxScaler
 import requests
@@ -7,25 +8,46 @@ from flask import Flask, Response, json
 
 app = Flask(__name__)
 
-# Define the BiRNN model with the correct architecture
-class BiRNNModel(nn.Module):
+# Define the HybridModel (same as in your model.py)
+class HybridModel(nn.Module):
     def __init__(self, input_size, hidden_layer_size, output_size, num_layers, dropout):
-        super(BiRNNModel, self).__init__()
+        super(HybridModel, self).__init__()
         self.hidden_layer_size = hidden_layer_size
         self.num_layers = num_layers
-        self.rnn = nn.RNN(input_size, hidden_layer_size, num_layers=num_layers, dropout=dropout, batch_first=True, bidirectional=True)
-        self.linear = nn.Linear(hidden_layer_size * 2, output_size)  # *2 because of bidirectional
+        
+        # LSTM layer
+        self.lstm = nn.LSTM(input_size, hidden_layer_size, num_layers=num_layers, 
+                            dropout=dropout, batch_first=True)
+        
+        # GRU layer
+        self.gru = nn.GRU(hidden_layer_size, hidden_layer_size, num_layers=num_layers, 
+                          dropout=dropout, batch_first=True)
+        
+        # Linear layer
+        self.linear = nn.Linear(hidden_layer_size, output_size)
+        
+        self.hidden_cell = (torch.zeros(num_layers, 1, self.hidden_layer_size),
+                            torch.zeros(num_layers, 1, self.hidden_layer_size))
 
     def forward(self, input_seq):
-        h_0 = torch.zeros(self.num_layers * 2, input_seq.size(0), self.hidden_layer_size)  # *2 for bidirection
-        rnn_out, _ = self.rnn(input_seq, h_0)
-        predictions = self.linear(rnn_out[:, -1])
+        # Pass through LSTM
+        lstm_out, self.hidden_cell = self.lstm(input_seq, self.hidden_cell)
+        
+        # Pass through GRU
+        gru_out, _ = self.gru(lstm_out)
+        
+        # Final prediction
+        predictions = self.linear(gru_out[:, -1])
         return predictions
 
-# Initialize the model with the same architecture as during training
-model = BiRNNModel(input_size=1, hidden_layer_size=115, output_size=1, num_layers=2, dropout=0.3)
-model.load_state_dict(torch.load("birnn_model_optimized.pth", weights_only=True))
+# Load the trained model
+device = torch.device("cpu")
+
+# Use the same parameters as in model.py
+model = HybridModel(input_size=1, hidden_layer_size=155, output_size=1, num_layers=3, dropout=0.3)
+model.load_state_dict(torch.load("hybrid_lstm_gru_model_optimized.pth", map_location=device), strict=False)
 model.eval()
+
 
 # Function to fetch historical data from Binance
 def get_binance_url(symbol="ETHUSDT", interval="1m", limit=1000):
@@ -70,11 +92,15 @@ def get_inference(token):
         else:
             df = df.tail(20)  # Use last 20 minutes of data
 
-        # Prepare data for the BiRNN model
+        # Prepare data for the LSTM model
         scaler = MinMaxScaler(feature_range=(-1, 1))
         scaled_data = scaler.fit_transform(df['price'].values.reshape(-1, 1))
 
         seq = torch.FloatTensor(scaled_data).view(1, -1, 1)
+
+        # Reset LSTM-GRU hidden state
+        model.hidden_cell = (torch.zeros(model.num_layers, 1, model.hidden_layer_size),
+                             torch.zeros(model.num_layers, 1, model.hidden_layer_size))
 
         # Make prediction
         with torch.no_grad():
