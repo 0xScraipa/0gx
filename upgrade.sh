@@ -7,7 +7,7 @@ CYAN="\033[0;36m"
 RESET="\033[0;32m"
 
 
-echo -e "${CYAN}Upgrade Your Allora Model(TYPE/Y):${RESET}"
+echo -e "${CYAN}Upgrade Your Allora Model to BiLSTM(TYPE/Y):${RESET}"
 read -p "" installdep
 echo
 
