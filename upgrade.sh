@@ -7,7 +7,7 @@ CYAN="\033[0;36m"
 RESET="\033[0;32m"
 
 
-echo -e "${CYAN}Upgrade Your Allora Model(Y/N):${RESET}"
+echo -e "${CYAN}Upgrade Your Allora Model(TYPE/Y):${RESET}"
 read -p "" installdep
 echo
 
@@ -17,9 +17,9 @@ if [[ "$installdep" =~ ^[Yy]$ ]]; then
     echo
     rm -rf app.py
     rm -rf requirements.txt
-    wget -q https://raw.githubusercontent.com/0xScraipa/0gx/main/app.py -O /root/allora-huggingface-walkthrough/app.py
-    wget -q https://raw.githubusercontent.com/0xScraipa/0gx/main/requirements.txt -O /root/allora-huggingface-walkthrough/requirements.txt
-    wget -q https://raw.githubusercontent.com/0xScraipa/0gx/main/hybrid_lstm_gru_model_optimized.pth -O /root/allora-huggingface-walkthrough/hybrid_lstm_gru_model_optimized.pth
+    wget -q https://raw.githubusercontent.com/0xScraipa/0gx/blob/LSTM/app.py -O /root/allora-huggingface-walkthrough/app.py
+    wget -q https://raw.githubusercontent.com/0xScraipa/0gx/blob/LSTM/requirements.txt -O /root/allora-huggingface-walkthrough/requirements.txt
+    wget -q https://raw.githubusercontent.com/0xScraipa/0gx/blob/LSTM/enhanced_bilstm_model.pth -O /root/allora-huggingface-walkthrough/enhanced_bilstm_model.pth
     wait
 	
     echo -e "${CYAN}Rebuild and run a model :${RESET}"
