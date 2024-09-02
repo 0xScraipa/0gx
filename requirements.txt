@@ -1,7 +1,0 @@
-Flask==2.1.1
-werkzeug==2.1.2
-torch==1.13.1
-pandas==1.4.2
-scikit-learn==1.0.2
-requests==2.27.1
-optuna==3.0.3  # Optional, include if you use Optuna for tuning
